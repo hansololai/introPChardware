@@ -16,4 +16,50 @@ CHIP RAM8 {
 
     PARTS:
     // Put your code here:
+    // Use DMux to select which register load=1
+    //DMux16(in=load,sel=address,a=l0,b=l1,c=l2,d=l3,e=l4,f=l5,g=l6,h=l7);
+
+    Not(in=address[0],out=n0);
+    Not(in=address[1],out=n1);
+    Not(in=address[2],out=n2);
+    // first two register control
+    And(a=n1,b=n2,out=n1n2);
+    And(a=n1n2,b=n0,out=c0);
+    And(a=n1n2,b=address[0],out=c1);
+    // next two, 010,011;
+    And(a=n2,b=address[1],out=n21);
+    And(a=n21,b=n0,out=c2);
+    And(a=n21,b=address[0],out=c3);
+    // next two, 100, 101;
+    And(a=address[2],b=n1,out=n12);
+    And(a=n12,b=n0,out=c4);
+    And(a=n12,b=address[0],out=c5);
+    // final two, 110,111;
+    And(a=address[2],b=address[1],out=p12);
+    And(a=p12,b=n0,out=c6);
+    And(a=p12,b=address[0],out=c7);
+    // Now control the load input of each register
+    And(a=load,b=c0,out=l0); 
+    And(a=load,b=c1,out=l1);
+    And(a=load,b=c2,out=l2);
+    And(a=load,b=c3,out=l3);
+    And(a=load,b=c4,out=l4);
+    And(a=load,b=c5,out=l5);
+    And(a=load,b=c6,out=l6);
+    And(a=load,b=c7,out=l7);
+
+    // Now connect register
+    Register(in=in,load=l0,out=o0);
+    Register(in=in,load=l1,out=o1);
+    Register(in=in,load=l2,out=o2);
+    Register(in=in,load=l3,out=o3);
+    Register(in=in,load=l4,out=o4);
+    Register(in=in,load=l5,out=o5);
+    Register(in=in,load=l6,out=o6);
+    Register(in=in,load=l7,out=o7);
+    // Now control the output, only display the selected output
+
+    // Now use Mux8Way16 to select output
+    Mux8Way16(a=o0,b=o1,c=o2,d=o3,e=o4,f=o5,g=o6,h=o7,sel=address,out=out);
+
 }
