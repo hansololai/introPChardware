@@ -20,6 +20,8 @@
 
 
 // Put your code here.
+@R2
+M=0;
 @R0 
 D=M          // Copy R0 value to D, later it will be put in temp;
 @temp        // setup memory for temp
@@ -33,10 +35,10 @@ M=1          // i=1
 (LOOP)
 @i
 D=M          // D=i
-@32767       
-D=D-A        // D=i-32767
+@R1       
+D=D-M        // D=i-R1
 @END
-D;JGT        // If i>32768, jump to end
+D;JGT        // If i>R1, jump to end
 
 @i
 D=M          // D=i
