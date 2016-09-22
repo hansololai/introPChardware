@@ -28,4 +28,24 @@ CHIP Memory {
 
     PARTS:
     // Put your code here:
+    And(a=address[14],b=address[13],out=two);
+    And(a=two,b=address[12],out=invalid);     // if it's 111, then it's over 0x6000.
+    Not(in=invalid,out=valid);
+    And(a=valid,b=load,out=load2);  // Makes it impossible to write to 0x6000+
+    Not(in=address[14],out=firstblock);
+    Not(in=address[13],out=temp);
+    And(a=address[14],b=temp,out=secondblock);
+
+    And(a=firstblock,b=load2,out=l1);
+    And(a=secondblock,b=load2,out=l2);
+    RAM16K(in=in,load=l1,address=address[0..13],out=o1);
+    Screen(in=in,load=l2,address=address[0..12],out=o2);
+    // check for keyboard
+    Keyboard(out=keyout);
+    Mux16(a=o1,b=o2,sel=address[14],out=o1o2);
+    //if both firstblock,secondblock are 0, output keyboard
+    Or(a=firstblock,b=secondblock,out=fors);
+    Mux16(a=keyout,b=o1o2,sel=fors,out=out);
+
+
 }
