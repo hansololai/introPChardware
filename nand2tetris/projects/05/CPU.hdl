@@ -40,4 +40,49 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+    // Control in A register and the Mux16, cmux and ca are control for A and Mux
+    Not(in=instruction[15],out=cmux);
+    And(a=instruction[15],b=instruction[5],out=cdesta);
+    Or(a=cdesta,b=cmux,out=ca);
+    Mux16(a=aluoutM,b=instruction,sel=cmux,out=Ain);
+    Register(in=Ain,load=ca,out=Aoutput);
+
+    // Control for D register, 1 if the destination is 1 and c instruction
+    And(a=instruction[15],b=instruction[4],out=cd);
+    Register(in=aluoutM,load=cd,out=Dout);
+
+    // Control for Mux before ALU is to control A/M input, this is the 4th bit from left in instruction
+    Mux16(a=Aoutput,b=inM,sel=instruction[12],out=AorM);
+
+    // Control in ALU is simply the 6 bit in instruction[6..11]
+    ALU(x= Dout, y=AorM,zx=instruction[11],
+        nx=instruction[10],
+        zy=instruction[9],
+        ny=instruction[8],
+        f=instruction[7],
+        no=instruction[6],
+        out=aluoutM,
+        zr=zr,
+        ng=ng);
+
+    // Control for writeM is similar to control for D, 1 if destination set to M and c instruction
+    And(a=instruction[15],b=instruction[3],out=writeM);
+
+    // Control for PC, 0 if no jump, 1 if jump. 
+    Or(a=zr,b=ng,out=le);
+    Not(in=le,out=possitive);
+    And(a=instruction[2],b=ng,out=j1);
+    And(a=instruction[1],b=zr,out=j2);
+    And(a=instruction[0],b=possitive,out=j3);
+    Or(a=j1,b=j2,out=j12);
+    Or(a=j12,b=j3,out=cj);
+    PC(in=Aoutput,reset=reset,load=cj,inc=true,out=pcout);
+    addressM=Aoutput[0..14];
+
+
+
+
+
+
+
 }
