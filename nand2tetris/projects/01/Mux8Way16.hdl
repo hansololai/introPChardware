@@ -19,4 +19,44 @@ CHIP Mux8Way16 {
 
     PARTS:
     // Put your code here:
+	Not(in=sel[0],out=ns1);
+	Not(in=sel[1],out=ns2);
+	Not(in=sel[2],out=ns3);
+	And(a=ns3,b=ns2,out=ns23);
+	And(a=ns3,b=sel[1],out=s01);
+	And(a=sel[2],b=ns2,out=s10);
+	And(a=sel[2],b=sel[1],out=s11);
+
+	And(a=ns23,b=ns1,out=ca);
+	And(a=ns23,b=sel[0],out=cb);
+	And(a=s01,b=ns1,out=cc);
+	And(a=s01,b=sel[0],out=cd);
+	And(a=s10,b=ns1,out=ce);
+	And(a=s10,b=sel[0],out=cf);
+	And(a=s11,b=ns1,out=cg);
+	And(a=s11,b=sel[0],out=ch);
+	
+	To16(in=ca,out=ca16);
+	To16(in=cb,out=cb16);
+	To16(in=cc,out=cc16);
+	To16(in=cd,out=cd16);
+	To16(in=ce,out=ce16);
+	To16(in=cf,out=cf16);
+	To16(in=cg,out=cg16);
+	To16(in=ch,out=ch16);
+	And16(a=a[0..15],b=ca16,out=ao);
+	And16(a=b[0..15],b=cb16,out=bo);
+	And16(a=c[0..15],b=cc16,out=co);
+	And16(a=d[0..15],b=cd16,out=do);
+	And16(a=e[0..15],b=ce16,out=eo);
+	And16(a=f[0..15],b=cf16,out=fo);
+	And16(a=g[0..15],b=cg16,out=go);
+	And16(a=h[0..15],b=ch16,out=ho);
+	Or16(a=ao,b=bo,out=o1);
+	Or16(a=co,b=do,out=o2);
+	Or16(a=eo,b=fo,out=o3);
+	Or16(a=go,b=ho,out=o4);
+	Or16(a=o1,b=o2,out=o5);
+	Or16(a=o3,b=o4,out=o6);
+	Or16(a=o5,b=o6,out=out);
 }

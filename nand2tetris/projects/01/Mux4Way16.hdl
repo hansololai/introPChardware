@@ -15,6 +15,24 @@ CHIP Mux4Way16 {
     IN a[16], b[16], c[16], d[16], sel[2];
     OUT out[16];
 
-    PARTS:
     // Put your code here:
+    PARTS:
+	Not(in=sel[0],out=ns1);
+	Not(in=sel[1],out=ns2);
+	And(a=ns2,b=ns1,out=ca);
+	And(a=ns2,b=sel[0],out=cb);
+	And(a=sel[1],b=ns1,out=cc);
+	And(a=sel[1],b=sel[0],out=cd);
+	To16(in=ca,out=ca16);
+	To16(in=cb,out=cb16);
+	To16(in=cc,out=cc16);
+	To16(in=cd,out=cd16);
+	And16(a=a[0..15],b=ca16,out=ao);
+	And16(a=b[0..15],b=cb16,out=bo);
+	And16(a=c[0..15],b=cc16,out=co);
+	And16(a=d[0..15],b=cd16,out=do);
+	Or16(a=ao,b=bo,out=o1);
+	Or16(a=co,b=do,out=o2);
+	Or16(a=o1,b=o2,out=out);
+	
 }
