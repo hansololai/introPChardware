@@ -45,11 +45,11 @@ CHIP CPU {
     And(a=instruction[15],b=instruction[5],out=cdesta);
     Or(a=cdesta,b=cmux,out=ca);
     Mux16(a=aluoutM,b=instruction,sel=cmux,out=Ain);
-    Register(in=Ain,load=ca,out=Aoutput);
+    ARegister(in=Ain,load=ca,out=Aoutput);
 
     // Control for D register, 1 if the destination is 1 and c instruction
     And(a=instruction[15],b=instruction[4],out=cd);
-    Register(in=aluoutM,load=cd,out=Dout);
+    DRegister(in=aluoutM,load=cd,out=Dout);
 
     // Control for Mux before ALU is to control A/M input, this is the 4th bit from left in instruction
     Mux16(a=Aoutput,b=inM,sel=instruction[12],out=AorM);
@@ -65,7 +65,8 @@ CHIP CPU {
         zr=zr,
         ng=ng);
 
-    // Control for writeM is similar to control for D, 1 if destination set to M and c instruction
+    // Control for writeM is similar to control for D, 1 if destination set to M and it is c instruction
+	
     And(a=instruction[15],b=instruction[3],out=writeM);
 
     // Control for PC, 0 if no jump, 1 if jump. 
@@ -76,8 +77,12 @@ CHIP CPU {
     And(a=instruction[0],b=possitive,out=j3);
     Or(a=j1,b=j2,out=j12);
     Or(a=j12,b=j3,out=cj);
-    PC(in=Aoutput,reset=reset,load=cj,inc=true,out=pcout);
-    addressM=Aoutput[0..14];
+	// cj represent the condition, but we still need to check if it is C instruction
+	And(a=cj,b=instruction[15],out=cj2);
+    PC(in=Aoutput,reset=reset,load=cj2,inc=true,out=pcout);
+	To15(in=Aoutput,out=addressM);
+	To15(in=pcout,out=pc);
+	Line(in=aluoutM,out=outM);
 
 
 
